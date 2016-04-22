@@ -1,32 +1,36 @@
 /**
- * Afficher les depots github d'un utilisateur
- *
+ * Afficher les publications disponibles dans un dépot github.
+ * Ce composant va rechercher tous les fichiers d'un depot présents dans un dossier
+ "publications" portant l'extension ".md"
  * @type
  */
 
 // récuperer le template et le css
-var template = require('./availables-repos-template.html');
-require('./availables-repos-component.css');
+var template = require('./availables-publications-template.html');
+require('./availables-publications-component.css');
 
-var AvailablesReposController = function($http, $scope) {
+var AvailablesPublicationsController = function($http, $scope) {
 
     // conserver les références des services
     this.$http = $http;
     this.$scope = $scope;
 
-    this.updateRepos();
+    this.publicationFolderName = "publications";
+
+    this.updatePublications();
 
 };
 // injection de dépendance sous forme d'un tableau de chaine de caractères
-AvailablesReposController.$inject = ["$http", "$scope"];
+AvailablesPublicationsController.$inject = ["$http", "$scope"];
 
 
 /**
 Mettre à jour les depots disponibles
 */
-AvailablesReposController.prototype.updateRepos = function() {
+AvailablesPublicationsController.prototype.updatePublications = function() {
     var vm = this;
-    this.$http.get("https://api.github.com/users/" + this.username + "/repos")
+    this.$http.get("https://api.github.com/repos/" + this.repository + "/contents/"
+    + this.publicationFolderName)
         .then(function(response) {
 
             console.log(response);
@@ -52,11 +56,11 @@ AvailablesReposController.prototype.updateRepos = function() {
 };
 
 module.exports = function(angularMod) {
-    angularMod.component("availablesRepos", {
+    angularMod.component("availablesPublications", {
         template: template,
-        controller: AvailablesReposController,
+        controller: AvailablesPublicationsController,
         bindings: {
-            username: "@"
+            repository: "@"
         }
     });
 };

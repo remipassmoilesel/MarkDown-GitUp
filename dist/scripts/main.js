@@ -58,6 +58,9 @@
 	// module d'affichage des repos
 	__webpack_require__(4)(angMod);
 
+	// affichage des publications disponibles
+	__webpack_require__(10)(angMod);
+
 	angMod.run(function($http) {
 	    console.log("mardown-github initalized !");
 	});
@@ -30996,7 +30999,7 @@
 
 	    .catch(function(response) {
 	        vm.repos = response;
-	        vm.errorMessage = "erreur lors de l'accés aux ressources.";
+	        vm.errorMessage = "Erreur lors de l'accés aux ressources.";
 	    });
 
 	};
@@ -31016,10 +31019,97 @@
 /* 5 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n\n    Dépôts disponibles pour l'utilisateur {{$ctrl.username}} ({{$ctrl.repos.length}}):\n\n    <ol>\n        <li ng-repeat=\"rep in $ctrl.repos\">\n            {{rep.name}}\n            ({{rep.language || \"Indéfini\"}},\n            {{(rep.sizeKo / 1024).toFixed(2)}} Mo)\n        </li>\n    </ol>\n\n</div>\n"
+	module.exports = "<div>\n\n    Dépôts disponibles pour l'utilisateur {{$ctrl.username}} ({{$ctrl.repos.length}}):\n\n    <ol>\n        <li ng-repeat=\"rep in $ctrl.repos\">\n            {{rep.name}}\n            ({{rep.language || \"Indéfini\"}},\n            {{(rep.sizeKo / 1024).toFixed(2)}} Mo)\n        </li>\n    </ol>\n\n    <div>{{$ctrl.errorMessage}}</div>\n\n</div>\n"
 
 /***/ },
 /* 6 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 7 */,
+/* 8 */,
+/* 9 */,
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Afficher les publications disponibles dans un dépot github.
+	 * Ce composant va rechercher tous les fichiers d'un depot présents dans un dossier
+	 "publications" portant l'extension ".md"
+	 * @type
+	 */
+
+	// récuperer le template et le css
+	var template = __webpack_require__(11);
+	__webpack_require__(12);
+
+	var AvailablesPublicationsController = function($http, $scope) {
+
+	    // conserver les références des services
+	    this.$http = $http;
+	    this.$scope = $scope;
+
+	    this.publicationFolderName = "publications";
+
+	    this.updatePublications();
+
+	};
+	// injection de dépendance sous forme d'un tableau de chaine de caractères
+	AvailablesPublicationsController.$inject = ["$http", "$scope"];
+
+
+	/**
+	Mettre à jour les depots disponibles
+	*/
+	AvailablesPublicationsController.prototype.updatePublications = function() {
+	    var vm = this;
+	    this.$http.get("https://api.github.com/repos/" + this.repository + "/contents/"
+	    + this.publicationFolderName)
+	        .then(function(response) {
+
+	            console.log(response);
+
+	            vm.repos = [];
+
+	            for (var i = 0; i < response.data.length; i++) {
+	                var rep = response.data[i];
+	                vm.repos.push({
+	                    name: rep.name,
+	                    language: rep.language,
+	                    sizeKo: rep.size
+	                });
+	            }
+
+	        })
+
+	    .catch(function(response) {
+	        vm.repos = response;
+	        vm.errorMessage = "Erreur lors de l'accés aux ressources.";
+	    });
+
+	};
+
+	module.exports = function(angularMod) {
+	    angularMod.component("availablesPublications", {
+	        template: template,
+	        controller: AvailablesPublicationsController,
+	        bindings: {
+	            repository: "@"
+	        }
+	    });
+	};
+
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	module.exports = "<div>\n\n    Publications disponibles dans le dêpot {{$ctrl.repository}} ({{$ctrl.publications.length}}):\n\n    <ol>\n        <li ng-repeat=\"rep in $ctrl.repos\">\n            {{rep.name}}\n            ({{rep.language || \"Indéfini\"}},\n            {{(rep.sizeKo / 1024).toFixed(2)}} Mo)\n        </li>\n    </ol>\n\n    <div>{{$ctrl.errorMessage}}</div>\n\n</div>\n"
+
+/***/ },
+/* 12 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
