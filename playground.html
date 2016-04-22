@@ -1,0 +1,41 @@
+<html>
+
+<head>
+    <script>
+        var pa = new Promise(function(resolve, reject) {
+            setTimeout(resolve, 500);
+        })
+
+        .then(function(resp) {
+
+            console.log("pa resolved");
+
+            var output = "output";
+
+            var pb = new Promise(
+                function(resolve, reject) {
+                    setTimeout(function(){
+                        resolve(" completed !")
+                    }, 1000);
+                }).then(function(respB){
+                    console.log(respB);
+                    output += respB;
+                    console.log(output);
+                });
+
+            return output;
+        });
+
+        pa.then(function(rslt) {
+            console.log(rslt);
+
+            setTimeout(function(){
+                console.log(rslt);
+            }, 1500);
+        });
+
+
+    </script>
+</head>
+
+</html>

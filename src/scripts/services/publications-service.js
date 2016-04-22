@@ -28,16 +28,6 @@ PublicationsService.prototype.getPublicationList = function() {
     return this.publications;
 };
 
-PublicationsService.prototype.getFileContent = function(filePath) {
-    var request = constants.githubApiRepos + vm.repository + "/contents/" + filePath;
-    return this.$http.get(request)
-        .then(function(response) {
-            console.log("PublicationsService.prototype.getFileContent(filePath)");
-            console.log(response);
-            return response;
-        });
-};
-
 /**
  * Mettre à jour la liste des publications disponibles. Liste tous les fichiers correspondant
  * et télécharge les description de catégories.
@@ -59,7 +49,7 @@ PublicationsService.prototype.updatePublicationList = function() {
 
         var request = constants.githubApiRepos + vm.repository + "/contents/" + path;
 
-        console.log(request);
+        // console.log(request);
 
         // demander un dossier
         return vm.$http.get(request)
@@ -68,54 +58,71 @@ PublicationsService.prototype.updatePublicationList = function() {
         .then(
             function(response) {
 
-                // console.log(response);
-
                 var output = [];
-                response.data.forEach(function(file) {
+
+                // itérer les fichiers et ajouter leurs desritptions
+                var descriptionIndex = -1;
+                response.data.forEach(function(file, index) {
+                    // verifier le nom et le type du fichier
                     if (file.type === 'dir' || file.name.endsWith(".md")) {
 
+                        // l'enregistrer
                         var f = {
+                            category: path,
                             type: file.type,
                             name: file.name,
-                            path: file.path
+                            path: file.path,
+                            download_url: file.download_url
                         };
                         output.push(f);
 
                         if (file.name === constants.descriptionFileName) {
-                            vm.getFileContent(file.path).then(function(content) {
-                                console.log("PublicationsService.prototype.updatePublicationList = function() {");
-                                console.log(content);
-                                f.content = content;
-                            });
+                            descriptionIndex = index;
                         }
                     }
                 });
 
-                return output;
+                // si le dossier contient un descripteur récupérer son contenu
+                // et retourner le tout
+                if (descriptionIndex !== -1) {
+                    var f = output[descriptionIndex];
+                    return vm.$http.get(f.download_url)
+                        .then(function(response) {
+                            f.content = response.data;
+                            return output;
+                        })
+                        .catch(function(response) {
+                            console.log(response);
+                            f.content = constants.defaultErrorMessage;
+                            return output;
+                        });
+                }
+
+                // sinon retourner directement le tout
+                 else {
+                    return output;
+                }
             }
         )
 
         // erreur lors de la requete
         .catch(function(resp) {
             console.log(resp);
-            return ["Erreur lors du traitement de la requête"];
+            return [constants.defaultErrorMessage];
         });
     };
 
     // lister le répertoire de publications
-    return processFolder(constants.publicationDirectory).then(function(list) {
+    return processFolder(constants.publicationDirectory)
+        .then(function(list) {
 
-        console.log("return processFolder(constants.publicationDirectory).then(function(list) {");
-        console.log(list);
+            var output = [];
 
-        var output = [];
+            list.forEach(function(file) {
+                console.log(file);
+            })
 
-        list.forEach(function(file) {
-
-        })
-
-
-    })
+        });
 
 };
 

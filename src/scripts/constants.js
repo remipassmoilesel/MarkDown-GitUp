@@ -14,7 +14,7 @@ module.exports = {
      * Le nom du fichier de description par défaut
      * @type {String}
      */
-    descriptionFile: "description.md",
+    descriptionFileName: "description.md",
     /**
      * Adresse de base de l'API
      * @type {String}
@@ -29,5 +29,10 @@ module.exports = {
      * Adresse de base pour les utilisateurs
      * @type {RegExp}
      */
-    githubApiUsers: "https://api.github.com/users/"
+    githubApiUsers: "https://api.github.com/users/",
+    /**
+     * Message d'erreur passe partout
+     * @type {String}
+     */
+    defaultErrorMessage: "Erreur lors du traitement des données."
 };
