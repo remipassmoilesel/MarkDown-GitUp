@@ -2,11 +2,9 @@
 
     Dépôts disponibles pour l'utilisateur {{$ctrl.username}} ({{$ctrl.repos.length}}):
 
-    <ol>
+    <ol ng-if="$ctrl.errorMessage === ''">
         <li ng-repeat="rep in $ctrl.repos">
-            {{rep.name}}
-            ({{rep.language || "Indéfini"}},
-            {{(rep.sizeBytes / 1024).toFixed(2)}} Mo)
+            {{rep.name}} ({{rep.language || "Indéfini"}}, {{(rep.sizeBytes / 1024).toFixed(2)}} Mo)
         </li>
     </ol>
 

@@ -9,46 +9,36 @@
 var template = require('./availables-publications-template.html');
 require('./availables-publications-component.css');
 
-var AvailablesPublicationsController = function($http, $scope) {
+var constants = require("../../constants.js");
+
+var AvailablesPublicationsController = function($http, $scope, publications) {
 
     // conserver les références des services
     this.$http = $http;
     this.$scope = $scope;
+    this.publications = publications;
 
-    this.publicationFolderName = "publications";
-
-    this.updatePublications();
+    this.updatePublicationList();
 
 };
 // injection de dépendance sous forme d'un tableau de chaine de caractères
-AvailablesPublicationsController.$inject = ["$http", "$scope"];
+AvailablesPublicationsController.$inject = ["$http", "$scope", constants.servicePublications];
 
 /**
 Mettre à jour les publications disponibles
 */
-AvailablesPublicationsController.prototype.updatePublications = function() {
+AvailablesPublicationsController.prototype.updatePublicationList = function() {
     var vm = this;
-    this.$http.get("https://api.github.com/repos/" + this.repository + "/contents/"
-        + this.publicationFolderName)
-        .then(function(response) {
-
-            console.log(response);
-
-            vm.publications = [];
-
-            for (var i = 0; i < response.data.length; i++) {
-                var rep = response.data[i];
-                vm.publications.push({
-                    name: rep.name
-                });
-            }
-
-        })
-
-    .catch(function(response) {
-        vm.publications = [];
-        vm.errorMessage = "Erreur lors de l'accés aux ressources.";
-    });
+    // this.publications.getPublicationList()
+    //     .then(function(list) {
+    //         console.log(list);
+    //         vm.publicationList = list;
+    //     })
+    //
+    // .catch(function(error) {
+    //     vm.publicationList = [];
+    //     vm.errorMessage = "Erreur lors de l'accés aux ressources.";
+    // });
 
 };
 

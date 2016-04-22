@@ -8,11 +8,15 @@
 var template = require('./availables-repos-template.html');
 require('./availables-repos-component.css');
 
+var constants = require("../../constants.js");
+
 var AvailablesReposController = function($http, $scope) {
 
     // conserver les références des services
     this.$http = $http;
     this.$scope = $scope;
+
+    this.errorMessage = "";
 
     this.updateRepos();
 
@@ -20,16 +24,13 @@ var AvailablesReposController = function($http, $scope) {
 // injection de dépendance sous forme d'un tableau de chaine de caractères
 AvailablesReposController.$inject = ["$http", "$scope"];
 
-
 /**
 Mettre à jour les depots disponibles
 */
 AvailablesReposController.prototype.updateRepos = function() {
     var vm = this;
-    this.$http.get("https://api.github.com/users/" + this.username + "/repos")
+    this.$http.get(constants.githubApiUsers + this.username + "/repos")
         .then(function(response) {
-
-            console.log(response);
 
             vm.repos = [];
 

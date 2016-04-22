@@ -9,51 +9,134 @@ elles sont placées dans des dossiers
 
 */
 
-var PUBLICATION_DIRECTORY_NAME = "publications";
-var CATEGORIE_DESCRIPTION_FILE = "description.md";
+var constants = require("../constants.js");
 
-
-var PublicationsService = function($http) {
+var PublicationsService = function(repository, $http) {
     this.$http = $http;
+    this.constants = constants;
+    this.repository = repository;
 
-    this.updatePublications();
+    this.updatePublicationList();
 };
 PublicationsService.$inject = ['$http'];
 
-
-var PublicationsService.prototype.getPublications = function() {
+/**
+ * Obtenir un tableau d'objet décrivant les publications
+ * @return {[type]} [description]
+ */
+PublicationsService.prototype.getPublicationList = function() {
     return this.publications;
 };
 
+PublicationsService.prototype.getFileContent = function(filePath) {
+    var request = constants.githubApiRepos + vm.repository + "/contents/" + filePath;
+    return this.$http.get(request)
+        .then(function(response) {
+            console.log("PublicationsService.prototype.getFileContent(filePath)");
+            console.log(response);
+            return response;
+        });
+};
+
 /**
-Mettre à jour les publications disponibles
-*/
-PublicationsService.prototype.updatePublications = function() {
-        var vm = this;
-        var request = "https://api.github.com/repos/" + this.repository + "/contents" + this.publicationFolderName;
-        this.$http.get(request)
-            .then(function(response) {
+ * Mettre à jour la liste des publications disponibles. Liste tous les fichiers correspondant
+ * et télécharge les description de catégories.
+ * @return {[type]} [description]
+ */
+PublicationsService.prototype.updatePublicationList = function() {
 
-                vm.publications = [];
+    var vm = this;
 
-                for (var i = 0; i < response.data.length; i++) {
-                    var rep = response.data[i];
-                    vm.publications.push({
-                        name: rep.name
-                    });
-                }
+    // Retour à attendre
+    // var output = {
+    //     categories : [],
+    //     publications : []
+    // }
 
-            })
+    // lister les fichiers et ne retenir que les fichiers finissant
+    // '.md' et les dossiers
+    var processFolder = function(path) {
 
-            .catch(function(response) {
-                vm.publications = [];
-                vm.errorMessage = "Erreur lors de l'accés aux ressources.";
-            });
+        var request = constants.githubApiRepos + vm.repository + "/contents/" + path;
 
-        };
+        console.log(request);
 
-        module.exports = function(angularMod) {
-            var id = "publications";
-            angularMod.service(id, PublictionsService);
-            return id;
-        };
+        // demander un dossier
+        return vm.$http.get(request)
+
+        // requete executée avec succes
+        .then(
+            function(response) {
+
+                // console.log(response);
+
+                var output = [];
+                response.data.forEach(function(file) {
+                    if (file.type === 'dir' || file.name.endsWith(".md")) {
+
+                        var f = {
+                            type: file.type,
+                            name: file.name,
+                            path: file.path
+                        };
+                        output.push(f);
+
+                        if (file.name === constants.descriptionFileName) {
+                            vm.getFileContent(file.path).then(function(content) {
+                                console.log("PublicationsService.prototype.updatePublicationList = function() {");
+                                console.log(content);
+                                f.content = content;
+                            });
+                        }
+                    }
+                });
+
+                return output;
+            }
+        )
+
+        // erreur lors de la requete
+        .catch(function(resp) {
+            console.log(resp);
+            return ["Erreur lors du traitement de la requête"];
+        });
+    };
+
+    // lister le répertoire de publications
+    return processFolder(constants.publicationDirectory).then(function(list) {
+
+        console.log("return processFolder(constants.publicationDirectory).then(function(list) {");
+        console.log(list);
+
+        var output = [];
+
+        list.forEach(function(file) {
+
+        })
+
+
+    })
+
+};
+
+/**
+ * Prends en paramétre un nom depot au format user/rep
+ * @param  {[type]} angularMod [description]
+ * @param  {[type]} repository [description]
+ * @return {[type]}            [description]
+ */
+module.exports = function(angularMod, repository) {
+
+    if (typeof repository === undefined) {
+        throw "You must specify a repository !";
+    }
+
+    var id = constants.servicePublications;
+
+    // fabrication du service
+    angularMod.factory(id, function($http) {
+        return new PublicationsService(repository, $http);
+    });
+
+    return id;
+};
