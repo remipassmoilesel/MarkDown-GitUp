@@ -4,7 +4,9 @@ var REPOSITORY = "remipassmoilesel/markdown-github";
 
 // chargement d'angular
 var angular = require("angular");
-var angMod = angular.module("markdownGithub", []);
+require("angular-sanitize");
+
+var angMod = angular.module("markdownGithub", ["ngSanitize"]);
 
 // service de manipulations des publications
 require("./services/publications-service.js")(angMod, REPOSITORY);

@@ -1,8 +1,7 @@
 /**
  * Afficher les publications disponibles dans un dépot github.
  * Ce composant va rechercher tous les fichiers d'un depot présents dans un dossier
- "publications" portant l'extension ".md"
- * @type
+ * "publications" portant l'extension ".md"
  */
 
 // récuperer le template et le css
@@ -18,6 +17,11 @@ var AvailablesPublicationsController = function($http, $scope, publications) {
     this.$scope = $scope;
     this.publications = publications;
 
+    this.currentPublication = "";
+
+    // conversion markdown / html
+    this.markdown = require("markdown").markdown;
+
     this.updatePublicationList();
 
 };
@@ -25,9 +29,24 @@ var AvailablesPublicationsController = function($http, $scope, publications) {
 AvailablesPublicationsController.$inject = ["$http", "$scope", constants.servicePublications];
 
 /**
+ * Afficher une publication dans le composant
+ * @param  {[type]} publication [description]
+ * @return {[type]}             [description]
+ */
+AvailablesPublicationsController.prototype.showPublication = function(publication) {
+    var vm = this;
+    this.publications.getContentOf(publication)
+        .then(function(pubContent) {
+            console.log(pubContent);
+            vm.currentPublication = vm.markdown.toHTML(pubContent);
+        });
+}
+
+/**
 Mettre à jour les publications disponibles
 */
 AvailablesPublicationsController.prototype.updatePublicationList = function() {
+
     var vm = this;
 
     this.publications.getPublicationList()

@@ -2,13 +2,19 @@
 
     Publications disponibles dans le dêpot {{$ctrl.repository}} ({{$ctrl.publicationList.length}}):
 
+    <!-- liste des publications dsponibles -->
     <ol>
         <li ng-repeat="pub in $ctrl.publicationList">
-            <a href="{{pub.download_url}}" target="_blank">
+            <a ng-click="$ctrl.showPublication(pub)" href="#">
                 {{pub.path}}</a> (catégorie: {{pub.category}})
         </li>
     </ol>
 
+    <!-- message d'erreur -->
     <div>{{$ctrl.errorMessage}}</div>
+
+    <!-- affichage de la publication courante -->
+    <div ng-bind-html="$ctrl.currentPublication">
+    </div>
 
 </div>

@@ -17,9 +17,42 @@ var PublicationsService = function(repository, $http, $q) {
     this.repository = repository;
     this.$q = $q;
 
-    this.publications = [];
+    // cache de la liste des publications
+    this.publicationList = [];
 
-    this.updatePublicationList();
+    // cache des publications
+    this.publications = {};
+
+    // première mise à jour de la liste
+    this.getPublicationList();
+};
+
+/**
+ * Retourne le contenu d'une publication
+ * @param  {[type]} pub [description]
+ * @return {[type]}     [description]
+ */
+PublicationsService.prototype.getContentOf = function(pub) {
+
+    var vm = this;
+
+    // la ressource n'a jamais été demandée, faire un appel et
+    // conserver le résultat en cache
+    if (typeof this.publications[pub.download_url] === "undefined") {
+        return this.$http.get(pub.download_url)
+            .then(function(response) {
+
+                vm.publications[pub.download_url] = response.data;
+
+                return response.data;
+            });
+    }
+
+    else {
+        return this.$q(function(resolve, reject) {
+            resolve(vm.publications[pub.download_url]);
+        });
+    }
 };
 
 /**
@@ -28,16 +61,21 @@ var PublicationsService = function(repository, $http, $q) {
  */
 PublicationsService.prototype.getPublicationList = function() {
 
+    var vm = this;
+
     // la liste des publications n'a jamais été encore demandé
-    if (this.publications.length < 1) {
-        return this.updatePublicationList();
+    if (this.publicationList.length < 1) {
+        return this.loadPublicationList()
+            .then(function(list) {
+                vm.publicationList = list;
+                return list;
+            });
     }
 
     // la liste est en cache
     else {
-        var vm = this;
         return this.$q(function(resolve, reject) {
-            resolve(vm.publications);
+            resolve(vm.publicationList);
         });
     }
 
@@ -48,7 +86,7 @@ PublicationsService.prototype.getPublicationList = function() {
  * et télécharge les description de catégories.
  * @return {[type]} [description]
  */
-PublicationsService.prototype.updatePublicationList = function() {
+PublicationsService.prototype.loadPublicationList = function() {
 
     var vm = this;
 
@@ -149,7 +187,7 @@ PublicationsService.prototype.updatePublicationList = function() {
 
             // Attendre la fin de toutes les promesses et renvoyer le résultat
             return vm.$q.all(promises).then(function(result) {
-                for(var i = 0; i < result.length; i++){
+                for (var i = 0; i < result.length; i++) {
                     output = output.concat(result[i]);
                 }
                 //console.log(result);
