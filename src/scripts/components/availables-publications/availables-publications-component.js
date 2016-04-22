@@ -30,26 +30,24 @@ Mettre à jour les depots disponibles
 AvailablesPublicationsController.prototype.updatePublications = function() {
     var vm = this;
     this.$http.get("https://api.github.com/repos/" + this.repository + "/contents/"
-    + this.publicationFolderName)
+        + this.publicationFolderName)
         .then(function(response) {
 
             console.log(response);
 
-            vm.repos = [];
+            vm.publications = [];
 
             for (var i = 0; i < response.data.length; i++) {
                 var rep = response.data[i];
-                vm.repos.push({
-                    name: rep.name,
-                    language: rep.language,
-                    sizeKo: rep.size
+                vm.publications.push({
+                    name: rep.name
                 });
             }
 
         })
 
     .catch(function(response) {
-        vm.repos = response;
+        vm.publications = [];
         vm.errorMessage = "Erreur lors de l'accés aux ressources.";
     });
 

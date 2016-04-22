@@ -6,7 +6,7 @@
         <li ng-repeat="rep in $ctrl.repos">
             {{rep.name}}
             ({{rep.language || "Indéfini"}},
-            {{(rep.sizeKo / 1024).toFixed(2)}} Mo)
+            {{(rep.sizeBytes / 1024).toFixed(2)}} Mo)
         </li>
     </ol>
 

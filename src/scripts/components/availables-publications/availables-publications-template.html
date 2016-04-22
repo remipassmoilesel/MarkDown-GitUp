@@ -3,10 +3,8 @@
     Publications disponibles dans le dêpot {{$ctrl.repository}} ({{$ctrl.publications.length}}):
 
     <ol>
-        <li ng-repeat="rep in $ctrl.repos">
-            {{rep.name}}
-            ({{rep.language || "Indéfini"}},
-            {{(rep.sizeKo / 1024).toFixed(2)}} Mo)
+        <li ng-repeat="pub in $ctrl.publications">
+            {{pub.name}}
         </li>
     </ol>
 

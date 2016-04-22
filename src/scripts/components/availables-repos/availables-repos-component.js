@@ -38,14 +38,14 @@ AvailablesReposController.prototype.updateRepos = function() {
                 vm.repos.push({
                     name: rep.name,
                     language: rep.language,
-                    sizeKo: rep.size
+                    sizeBytes: rep.size
                 });
             }
 
         })
 
     .catch(function(response) {
-        vm.repos = response;
+        vm.publications = [];
         vm.errorMessage = "Erreur lors de l'accés aux ressources.";
     });
 

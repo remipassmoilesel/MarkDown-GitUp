@@ -30991,14 +30991,14 @@
 	                vm.repos.push({
 	                    name: rep.name,
 	                    language: rep.language,
-	                    sizeKo: rep.size
+	                    sizeBytes: rep.size
 	                });
 	            }
 
 	        })
 
 	    .catch(function(response) {
-	        vm.repos = response;
+	        vm.publications = [];
 	        vm.errorMessage = "Erreur lors de l'accés aux ressources.";
 	    });
 
@@ -31019,7 +31019,7 @@
 /* 5 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n\n    Dépôts disponibles pour l'utilisateur {{$ctrl.username}} ({{$ctrl.repos.length}}):\n\n    <ol>\n        <li ng-repeat=\"rep in $ctrl.repos\">\n            {{rep.name}}\n            ({{rep.language || \"Indéfini\"}},\n            {{(rep.sizeKo / 1024).toFixed(2)}} Mo)\n        </li>\n    </ol>\n\n    <div>{{$ctrl.errorMessage}}</div>\n\n</div>\n"
+	module.exports = "<div>\n\n    Dépôts disponibles pour l'utilisateur {{$ctrl.username}} ({{$ctrl.repos.length}}):\n\n    <ol>\n        <li ng-repeat=\"rep in $ctrl.repos\">\n            {{rep.name}}\n            ({{rep.language || \"Indéfini\"}},\n            {{(rep.sizeBytes / 1024).toFixed(2)}} Mo)\n        </li>\n    </ol>\n\n    <div>{{$ctrl.errorMessage}}</div>\n\n</div>\n"
 
 /***/ },
 /* 6 */
@@ -31066,26 +31066,24 @@
 	AvailablesPublicationsController.prototype.updatePublications = function() {
 	    var vm = this;
 	    this.$http.get("https://api.github.com/repos/" + this.repository + "/contents/"
-	    + this.publicationFolderName)
+	        + this.publicationFolderName)
 	        .then(function(response) {
 
 	            console.log(response);
 
-	            vm.repos = [];
+	            vm.publications = [];
 
 	            for (var i = 0; i < response.data.length; i++) {
 	                var rep = response.data[i];
-	                vm.repos.push({
-	                    name: rep.name,
-	                    language: rep.language,
-	                    sizeKo: rep.size
+	                vm.publications.push({
+	                    name: rep.name
 	                });
 	            }
 
 	        })
 
 	    .catch(function(response) {
-	        vm.repos = response;
+	        vm.publications = [];
 	        vm.errorMessage = "Erreur lors de l'accés aux ressources.";
 	    });
 
@@ -31106,7 +31104,7 @@
 /* 11 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n\n    Publications disponibles dans le dêpot {{$ctrl.repository}} ({{$ctrl.publications.length}}):\n\n    <ol>\n        <li ng-repeat=\"rep in $ctrl.repos\">\n            {{rep.name}}\n            ({{rep.language || \"Indéfini\"}},\n            {{(rep.sizeKo / 1024).toFixed(2)}} Mo)\n        </li>\n    </ol>\n\n    <div>{{$ctrl.errorMessage}}</div>\n\n</div>\n"
+	module.exports = "<div>\n\n    Publications disponibles dans le dêpot {{$ctrl.repository}} ({{$ctrl.publications.length}}):\n\n    <ol>\n        <li ng-repeat=\"pub in $ctrl.publications\">\n            {{pub.name}}\n        </li>\n    </ol>\n\n    <div>{{$ctrl.errorMessage}}</div>\n\n</div>\n"
 
 /***/ },
 /* 12 */
