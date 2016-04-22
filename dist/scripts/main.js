@@ -31059,9 +31059,8 @@
 	// injection de dépendance sous forme d'un tableau de chaine de caractères
 	AvailablesPublicationsController.$inject = ["$http", "$scope"];
 
-
 	/**
-	Mettre à jour les depots disponibles
+	Mettre à jour les publications disponibles
 	*/
 	AvailablesPublicationsController.prototype.updatePublications = function() {
 	    var vm = this;
