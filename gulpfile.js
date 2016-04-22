@@ -8,10 +8,11 @@ var imagemin = require('gulp-imagemin'),
     cache = require('gulp-cache');
 var minifycss = require('gulp-minify-css');
 
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var webpack = require('webpack-stream');
 var named = require('vinyl-named');
 
-var webpackEntries = ['src/scripts/main.js'];
+var webpackEntries = ['./src/scripts/main.js'];
 
 /*
 Gestion des images
@@ -65,6 +66,13 @@ gulp.task('scripts', function() {
                 modules: false,
                 reasons: false
             },
+            module: {
+                loaders: [
+                    {test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader")},
+                    {test: /\.html$/, loader: 'raw-loader'}
+                ]
+            },
+            plugins: [new ExtractTextPlugin("[name].css")],
             watch: true
         }))
         .pipe(gulp.dest('dist/scripts/'))

@@ -1,0 +1,13 @@
+<div>
+
+    Dépôts disponibles pour l'utilisateur {{$ctrl.username}} ({{$ctrl.repos.length}}):
+
+    <ol>
+        <li ng-repeat="rep in $ctrl.repos">
+            {{rep.name}}
+            ({{rep.language || "Indéfini"}},
+            {{(rep.sizeKo / 1024).toFixed(2)}} Mo)
+        </li>
+    </ol>
+
+</div>

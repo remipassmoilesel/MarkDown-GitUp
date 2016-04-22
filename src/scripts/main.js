@@ -1,13 +1,10 @@
 var angular = require("angular");
 
-console.log("Script loading");
+var angMod = angular.module("markdownGithub", []);
 
-angular.module("crossCallApp", [])
+// module d'affichage des repos
+require("./components/availables-repos/availables-repos-component.js")(angMod);
 
-    .config(function() {
-        console.log();
-    })
-
-    .run(function($http) {
-        console.log($http);
-    });
+angMod.run(function($http) {
+    console.log("mardown-github initalized !");
+});
