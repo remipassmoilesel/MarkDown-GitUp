@@ -1,6 +1,6 @@
 # markdown-github
 
-Essai sur la création d'un environnement de publication autour de Markdown et Github.
+Essai sur la création d'un environnement minimaliste de publication basé sur Markdown et Github.
 
 Usage:
 

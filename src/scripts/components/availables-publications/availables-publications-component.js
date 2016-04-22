@@ -29,16 +29,17 @@ Mettre à jour les publications disponibles
 */
 AvailablesPublicationsController.prototype.updatePublicationList = function() {
     var vm = this;
-    // this.publications.getPublicationList()
-    //     .then(function(list) {
-    //         console.log(list);
-    //         vm.publicationList = list;
-    //     })
-    //
-    // .catch(function(error) {
-    //     vm.publicationList = [];
-    //     vm.errorMessage = "Erreur lors de l'accés aux ressources.";
-    // });
+
+    this.publications.getPublicationList()
+        .then(function(list) {
+            vm.publicationList = list;
+        })
+
+    .catch(function(error) {
+        console.log(error);
+        vm.publicationList = [];
+        vm.errorMessage = "Erreur lors de l'accés aux ressources.";
+    });
 
 };
 

@@ -30971,21 +30971,36 @@
 
 	var constants = __webpack_require__(5);
 
-	var PublicationsService = function(repository, $http) {
+	var PublicationsService = function(repository, $http, $q) {
 	    this.$http = $http;
 	    this.constants = constants;
 	    this.repository = repository;
+	    this.$q = $q;
+
+	    this.publications = [];
 
 	    this.updatePublicationList();
 	};
-	PublicationsService.$inject = ['$http'];
 
 	/**
 	 * Obtenir un tableau d'objet décrivant les publications
 	 * @return {[type]} [description]
 	 */
 	PublicationsService.prototype.getPublicationList = function() {
-	    return this.publications;
+
+	    // la liste des publications n'a jamais été encore demandé
+	    if (this.publications.length < 1) {
+	        return this.updatePublicationList();
+	    }
+
+	    // la liste est en cache
+	    else {
+	        var vm = this;
+	        return this.$q(function(resolve, reject) {
+	            resolve(vm.publications);
+	        });
+	    }
+
 	};
 
 	/**
@@ -30997,19 +31012,11 @@
 
 	    var vm = this;
 
-	    // Retour à attendre
-	    // var output = {
-	    //     categories : [],
-	    //     publications : []
-	    // }
-
 	    // lister les fichiers et ne retenir que les fichiers finissant
 	    // '.md' et les dossiers
-	    var processFolder = function(path) {
+	    var processFolder = function(path, mode) {
 
 	        var request = constants.githubApiRepos + vm.repository + "/contents/" + path;
-
-	        // console.log(request);
 
 	        // demander un dossier
 	        return vm.$http.get(request)
@@ -31023,8 +31030,9 @@
 	                // itérer les fichiers et ajouter leurs desritptions
 	                var descriptionIndex = -1;
 	                response.data.forEach(function(file, index) {
+
 	                    // verifier le nom et le type du fichier
-	                    if (file.type === 'dir' || file.name.endsWith(".md")) {
+	                    if ((mode !== 'filesOnly' && file.type === 'dir') || file.name.endsWith(".md")) {
 
 	                        // l'enregistrer
 	                        var f = {
@@ -31059,7 +31067,7 @@
 	                }
 
 	                // sinon retourner directement le tout
-	                 else {
+	                else {
 	                    return output;
 	                }
 	            }
@@ -31077,10 +31085,36 @@
 	        .then(function(list) {
 
 	            var output = [];
+	            var promises = [];
 
 	            list.forEach(function(file) {
-	                console.log(file);
-	            })
+
+	                // sous dossier, analyse et conservation de la promesse
+	                if (file.type === "dir") {
+
+	                    var sp = processFolder(file.path, "filesOnly")
+	                        .then(function(subList) {
+	                            return subList;
+	                        });
+
+	                    promises.push(sp);
+	                }
+
+	                // fichier standard, ajout simple
+	                else {
+	                    output.push(file);
+	                }
+
+	            });
+
+	            // Attendre la fin de toutes les promesses et renvoyer le résultat
+	            return vm.$q.all(promises).then(function(result) {
+	                for(var i = 0; i < result.length; i++){
+	                    output = output.concat(result[i]);
+	                }
+	                //console.log(result);
+	                return output;
+	            });
 
 	        });
 
@@ -31101,8 +31135,8 @@
 	    var id = constants.servicePublications;
 
 	    // fabrication du service
-	    angularMod.factory(id, function($http) {
-	        return new PublicationsService(repository, $http);
+	    angularMod.factory(id, function($http, $q) {
+	        return new PublicationsService(repository, $http, $q);
 	    });
 
 	    return id;
@@ -31272,16 +31306,17 @@
 	*/
 	AvailablesPublicationsController.prototype.updatePublicationList = function() {
 	    var vm = this;
-	    // this.publications.getPublicationList()
-	    //     .then(function(list) {
-	    //         console.log(list);
-	    //         vm.publicationList = list;
-	    //     })
-	    //
-	    // .catch(function(error) {
-	    //     vm.publicationList = [];
-	    //     vm.errorMessage = "Erreur lors de l'accés aux ressources.";
-	    // });
+
+	    this.publications.getPublicationList()
+	        .then(function(list) {
+	            vm.publicationList = list;
+	        })
+
+	    .catch(function(error) {
+	        console.log(error);
+	        vm.publicationList = [];
+	        vm.errorMessage = "Erreur lors de l'accés aux ressources.";
+	    });
 
 	};
 
@@ -31300,7 +31335,7 @@
 /* 13 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n\n    Publications disponibles dans le dêpot {{$ctrl.repository}} ({{$ctrl.publications.length}}):\n\n    <ol>\n        <li ng-repeat=\"pub in $ctrl.publicationList\">\n            {{pub.name}}\n        </li>\n    </ol>\n\n    <div>{{$ctrl.errorMessage}}</div>\n\n</div>\n"
+	module.exports = "<div>\n\n    Publications disponibles dans le dêpot {{$ctrl.repository}} ({{$ctrl.publicationList.length}}):\n\n    <ol>\n        <li ng-repeat=\"pub in $ctrl.publicationList\">\n            <a href=\"{{pub.download_url}}\" target=\"_blank\">\n                {{pub.path}}</a> (catégorie: {{pub.category}})\n        </li>\n    </ol>\n\n    <div>{{$ctrl.errorMessage}}</div>\n\n</div>\n"
 
 /***/ },
 /* 14 */

@@ -1,10 +1,11 @@
 <div>
 
-    Publications disponibles dans le dêpot {{$ctrl.repository}} ({{$ctrl.publications.length}}):
+    Publications disponibles dans le dêpot {{$ctrl.repository}} ({{$ctrl.publicationList.length}}):
 
     <ol>
         <li ng-repeat="pub in $ctrl.publicationList">
-            {{pub.name}}
+            <a href="{{pub.download_url}}" target="_blank">
+                {{pub.path}}</a> (catégorie: {{pub.category}})
         </li>
     </ol>
 
