@@ -51,12 +51,19 @@
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	console.log("Salut !");
-
-
 	var angular = __webpack_require__(2);
 
-	console.log(angular);
+	console.log("Script loading");
+
+	angular.module("crossCallApp", [])
+
+	    .config(function() {
+	        console.log();
+	    })
+
+	    .run(function($http) {
+	        console.log($http);
+	    });
 
 
 /***/ },
