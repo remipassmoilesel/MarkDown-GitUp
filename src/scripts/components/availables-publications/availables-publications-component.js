@@ -6,7 +6,6 @@
 
 // récuperer le template et le css
 var template = require('./availables-publications-template.html');
-require('./availables-publications-component.css');
 
 var constants = require("../../constants.js");
 

@@ -6,7 +6,6 @@
 
 // récuperer le template et le css
 var template = require('./availables-repos-template.html');
-require('./availables-repos-component.css');
 
 var constants = require("../../constants.js");
 

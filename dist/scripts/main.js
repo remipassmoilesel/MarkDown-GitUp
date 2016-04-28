@@ -67,7 +67,13 @@
 	__webpack_require__(8)(angMod);
 
 	// affichage des publications disponibles
-	__webpack_require__(14)(angMod);
+	__webpack_require__(10)(angMod);
+
+	// en tete de page
+	__webpack_require__(18)(angMod);
+
+	// contenu de page
+	__webpack_require__(20)(angMod);
 
 	angMod.run(function($http) {
 
@@ -31944,7 +31950,6 @@
 
 	// récuperer le template et le css
 	var template = __webpack_require__(9);
-	__webpack_require__(10);
 
 	var constants = __webpack_require__(7);
 
@@ -32009,15 +32014,6 @@
 
 /***/ },
 /* 10 */
-/***/ function(module, exports) {
-
-	// removed by extract-text-webpack-plugin
-
-/***/ },
-/* 11 */,
-/* 12 */,
-/* 13 */,
-/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -32027,8 +32023,7 @@
 	 */
 
 	// récuperer le template et le css
-	var template = __webpack_require__(15);
-	__webpack_require__(16);
+	var template = __webpack_require__(11);
 
 	var constants = __webpack_require__(7);
 
@@ -32042,7 +32037,7 @@
 	    this.currentPublication = "";
 
 	    // conversion markdown / html
-	    this.markdown = __webpack_require__(18).markdown;
+	    this.markdown = __webpack_require__(12).markdown;
 
 	    this.updatePublicationList();
 
@@ -32096,29 +32091,22 @@
 
 
 /***/ },
-/* 15 */
+/* 11 */
 /***/ function(module, exports) {
 
 	module.exports = "<div>\n\n    Publications disponibles dans le dêpot {{$ctrl.repository}} ({{$ctrl.publicationList.length}}):\n\n    <!-- liste des publications dsponibles -->\n    <ol>\n        <li ng-repeat=\"pub in $ctrl.publicationList\">\n            <a ng-click=\"$ctrl.showPublication(pub)\" href=\"#\">\n                {{pub.path}}</a> (catégorie: {{pub.category}})\n        </li>\n    </ol>\n\n    <!-- message d'erreur -->\n    <div>{{$ctrl.errorMessage}}</div>\n\n    <!-- affichage de la publication courante -->\n    <div ng-bind-html=\"$ctrl.currentPublication\">\n    </div>\n\n</div>\n"
 
 /***/ },
-/* 16 */
-/***/ function(module, exports) {
-
-	// removed by extract-text-webpack-plugin
-
-/***/ },
-/* 17 */,
-/* 18 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// super simple module for the most common nodejs use case.
-	exports.markdown = __webpack_require__(19);
+	exports.markdown = __webpack_require__(13);
 	exports.parse = exports.markdown.toHTML;
 
 
 /***/ },
-/* 19 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Released under MIT license
@@ -32250,7 +32238,7 @@
 
 	// node
 	function mk_block_inspect() {
-	  var util = __webpack_require__(20);
+	  var util = __webpack_require__(14);
 	  return "Markdown.mk_block( " +
 	          util.inspect(this.toString()) +
 	          ", " +
@@ -33849,7 +33837,7 @@
 
 
 /***/ },
-/* 20 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -34377,7 +34365,7 @@
 	}
 	exports.isPrimitive = isPrimitive;
 
-	exports.isBuffer = __webpack_require__(22);
+	exports.isBuffer = __webpack_require__(16);
 
 	function objectToString(o) {
 	  return Object.prototype.toString.call(o);
@@ -34421,7 +34409,7 @@
 	 *     prototype.
 	 * @param {function} superCtor Constructor function to inherit prototype from.
 	 */
-	exports.inherits = __webpack_require__(23);
+	exports.inherits = __webpack_require__(17);
 
 	exports._extend = function(origin, add) {
 	  // Don't do anything if add isn't an object
@@ -34439,10 +34427,10 @@
 	  return Object.prototype.hasOwnProperty.call(obj, prop);
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(21)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(15)))
 
 /***/ },
-/* 21 */
+/* 15 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -34539,7 +34527,7 @@
 
 
 /***/ },
-/* 22 */
+/* 16 */
 /***/ function(module, exports) {
 
 	module.exports = function isBuffer(arg) {
@@ -34550,7 +34538,7 @@
 	}
 
 /***/ },
-/* 23 */
+/* 17 */
 /***/ function(module, exports) {
 
 	if (typeof Object.create === 'function') {
@@ -34577,6 +34565,68 @@
 	  }
 	}
 
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * En tete de page
+	 *
+	 */
+
+	var template = __webpack_require__(19);
+
+	var HeaderController = function(){
+
+	};
+
+	module.exports = function(angularMod) {
+	    angularMod.component("header", {
+	        template: template,
+	        controller: HeaderController,
+	        bindings: {
+	        }
+	    });
+	};
+
+
+/***/ },
+/* 19 */
+/***/ function(module, exports) {
+
+	module.exports = "<div class=\"headerComponent\">\n\n<pre>\n  ░█▄█░█▀█░█▀▄░█░█░█▀▄░█▀█░█░█░█▀█░░░░░░░▀▄░░░░█▀▀░▀█▀░▀█▀░█░█░█▀█░░░█\n  ░█░█░█▀█░█▀▄░█▀▄░█░█░█░█░█▄█░█░█░░░▄▄▄░░▄▀░░░█░█░░█░░░█░░█░█░█▀▀░░░▀\n  ░▀░▀░▀░▀░▀░▀░▀░▀░▀▀░░▀▀▀░▀░▀░▀░▀░░░░░░░▀░░░░░▀▀▀░▀▀▀░░▀░░▀▀▀░▀░░░░░▀\n</pre>\n\n</div>\n"
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * En tete de page
+	 *
+	 */
+
+	var template = __webpack_require__(21);
+
+	var ContentController = function(){
+
+	};
+
+	module.exports = function(angularMod) {
+	    angularMod.component("content", {
+	        template: template,
+	        controller: ContentController,
+	        bindings: {
+	        }
+	    });
+	};
+
+
+/***/ },
+/* 21 */
+/***/ function(module, exports) {
+
+	module.exports = "<div class=\"contentComponent\">\n\n    <!-- lister les repositories disponibles -->\n    <availables-repos username=\"remipassmoilesel\"></availables-repos>\n\n    <!-- lister les publications disponibles -->\n    <availables-publications repository=\"remipassmoilesel/markdown-github\"></availables-publications>\n\n</div>\n"
 
 /***/ }
 /******/ ]);

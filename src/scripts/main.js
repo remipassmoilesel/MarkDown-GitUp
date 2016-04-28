@@ -16,6 +16,12 @@ require("./components/availables-repos/availables-repos-component.js")(angMod);
 // affichage des publications disponibles
 require("./components/availables-publications/availables-publications-component.js")(angMod);
 
+// en tete de page
+require("./components/header/header-component.js")(angMod);
+
+// contenu de page
+require("./components/content/content-component.js")(angMod);
+
 angMod.run(function($http) {
 
     console.log("mardown-github initalized !");
