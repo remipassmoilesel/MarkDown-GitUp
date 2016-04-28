@@ -11,10 +11,10 @@ elles sont placées dans des dossiers
 
 var constants = require("../constants.js");
 
-var PublicationsService = function(repository, $http, $q) {
+var PublicationsService = function(source, $http, $q) {
     this.$http = $http;
     this.constants = constants;
-    this.repository = repository;
+    this.source = source;
     this.$q = $q;
 
     // cache de la liste des publications
@@ -41,14 +41,10 @@ PublicationsService.prototype.getContentOf = function(pub) {
     if (typeof this.publications[pub.download_url] === "undefined") {
         return this.$http.get(pub.download_url)
             .then(function(response) {
-
                 vm.publications[pub.download_url] = response.data;
-
                 return response.data;
             });
-    }
-
-    else {
+    } else {
         return this.$q(function(resolve, reject) {
             resolve(vm.publications[pub.download_url]);
         });
@@ -90,111 +86,78 @@ PublicationsService.prototype.loadPublicationList = function() {
 
     var vm = this;
 
-    // lister les fichiers et ne retenir que les fichiers finissant
-    // '.md' et les dossiers
-    var processFolder = function(path, mode) {
+    // demander un arbre récursif de tous les fichiers du rep
+    return this.$http.get(constants.githubApiRepos + this.source + "/git/trees/master?recursive=1")
+        .then(function(response) {
 
-        var request = constants.githubApiRepos + vm.repository + "/contents/" + path;
-
-        // demander un dossier
-        return vm.$http.get(request)
-
-        // requete executée avec succes
-        .then(
-            function(response) {
-
-                var output = [];
-
-                // itérer les fichiers et ajouter leurs desritptions
-                var descriptionIndex = -1;
-                response.data.forEach(function(file, index) {
-
-                    // verifier le nom et le type du fichier
-                    if ((mode !== 'filesOnly' && file.type === 'dir') || file.name.endsWith(".md")) {
-
-                        // l'enregistrer
-                        var f = {
-                            category: path,
-                            type: file.type,
-                            name: file.name,
-                            path: file.path,
-                            download_url: file.download_url
-                        };
-                        output.push(f);
-
-                        if (file.name === constants.descriptionFileName) {
-                            descriptionIndex = index;
-                        }
-                    }
-                });
-
-                // si le dossier contient un descripteur récupérer son contenu
-                // et retourner le tout
-                if (descriptionIndex !== -1) {
-                    var f = output[descriptionIndex];
-                    return vm.$http.get(f.download_url)
-                        .then(function(response) {
-                            f.content = response.data;
-                            return output;
-                        })
-                        .catch(function(response) {
-                            console.log(response);
-                            f.content = constants.defaultErrorMessage;
-                            return output;
-                        });
-                }
-
-                // sinon retourner directement le tout
-                else {
-                    return output;
-                }
+            if (response.truncated == true) {
+                console.err("Attention: not all files were received !");
             }
-        )
 
-        // erreur lors de la requete
-        .catch(function(resp) {
-            console.log(resp);
-            return [constants.defaultErrorMessage];
-        });
-    };
-
-    // lister le répertoire de publications
-    return processFolder(constants.publicationDirectory)
-        .then(function(list) {
+            // récupérer le contenu d'une entrée de fichier et l'ajouter à la variable
+            var getFileContent = function(fe) {
+                vm.$http.get(fe.download_url)
+                    .then(function(response) {
+                        fe.content = response.data;
+                    })
+                    .catch(function(resp) {
+                        fe.content = "Contenu indisponible";
+                    });
+            }
 
             var output = [];
+
+            // l'ensemble des promesses à tenir avant de retourner les valeurs
             var promises = [];
 
-            list.forEach(function(file) {
+            var fileRegex = new RegExp(constants.publicationDirectory + "/(?:([^/]+)/)?([^/]+)\.md", "i");
 
-                // sous dossier, analyse et conservation de la promesse
-                if (file.type === "dir") {
+            // itérer les reponses
+            for (var i = 0; i < response.data.tree.length; i++) {
+                var file = response.data.tree[i];
 
-                    var sp = processFolder(file.path, "filesOnly")
-                        .then(function(subList) {
-                            return subList;
-                        });
-
-                    promises.push(sp);
+                // ignorer les non fichiers
+                if(file.type === "tree"){
+                    continue;
                 }
 
-                // fichier standard, ajout simple
-                else {
-                    output.push(file);
-                }
+                // vérifier le fichier
+                var regTest = fileRegex.exec(file.path);
 
-            });
+                // le fichier se termine par md
+                if (regTest !== null) {
 
-            // Attendre la fin de toutes les promesses et renvoyer le résultat
-            return vm.$q.all(promises).then(function(result) {
-                for (var i = 0; i < result.length; i++) {
-                    output = output.concat(result[i]);
+                    // enregistrer le fichier
+                    var nf = {
+                        category: regTest[1] || '',
+                        name: regTest[2],
+                        type: file.type,
+                        download_url: constants.githubRawContent + vm.source + "/master/" + file.path,
+                        path: file.path
+                    };
+                    output.push(nf);
+
+                    // récuperer le contenu des descriptions
+                    if (nf.name === "description") {
+                        // recuperer le contenu
+                        var p = getFileContent(nf);
+
+                        // stocker la promesse pour attente
+                        promises.push(p);
+                    }
+
+
                 }
-                //console.log(result);
+            }
+
+            // retourner le tout lorsque c'est bong ...
+            return vm.$q.all(promises).then(function() {
                 return output;
             });
 
         });
+
+
 
 };
 
@@ -204,17 +167,17 @@ PublicationsService.prototype.loadPublicationList = function() {
  * @param  {[type]} repository [description]
  * @return {[type]}            [description]
  */
-module.exports = function(angularMod, repository) {
+module.exports = function(angularMod, source) {
 
-    if (typeof repository === undefined) {
-        throw "You must specify a repository !";
+    if (typeof source === undefined) {
+        throw "You must specify a source !";
     }
 
     var id = constants.servicePublications;
 
     // fabrication du service
     angularMod.factory(id, function($http, $q) {
-        return new PublicationsService(repository, $http, $q);
+        return new PublicationsService(source, $http, $q);
     });
 
     return id;

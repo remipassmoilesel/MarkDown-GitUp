@@ -26,6 +26,11 @@ module.exports = {
      */
     githubApiRepos: "https://api.github.com/repos/",
     /**
+     * [githubApiRepos description]
+     * @type {String}
+     */
+    githubRawContent: "https://raw.githubusercontent.com/",
+    /**
      * Adresse de base pour les utilisateurs
      * @type {RegExp}
      */
