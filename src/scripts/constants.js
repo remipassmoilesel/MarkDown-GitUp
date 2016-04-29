@@ -5,6 +5,11 @@ module.exports = {
      * @type {String}
      */
     servicePublications: "servicePublications",
+    /**
+     * Service d'accès aux routes
+     * @type {String}
+     */
+    serviceRoutes: "serviceRoutes",
    /**
     * Le répertoire ou sont recherchées les publications
     * @type {String}

@@ -5,7 +5,11 @@ var SOURCE = "remipassmoilesel/MarkDown-GitUp";
 var angular = require("angular");
 require("angular-sanitize");
 
-var angMod = angular.module("markdownGithub", ["ngSanitize"]);
+require("angular-route");
+
+var angMod = angular.module("markdownGithub", ["ngSanitize", "ngRoute"]);
+
+require("./services/routes.js")(angMod);
 
 // service de manipulations des publications
 require("./services/publications-service.js")(angMod, SOURCE);
@@ -24,11 +28,9 @@ require("./components/content/content-component.js")(angMod);
 
 angMod.run(function($http) {
 
-    console.log("mardown-github initalized !");
-
-    $http.get("https://api.github.com/repos/remipassmoilesel/MarkDown-GitUp/git/trees/master?recursive=1")
-        .then(function(response) {
-            console.log(response);
-        });
+    // $http.get("https://api.github.com/repos/remipassmoilesel/MarkDown-GitUp/git/trees/master?recursive=1")
+    //     .then(function(response) {
+    //         console.log(response);
+    //     });
 
 });

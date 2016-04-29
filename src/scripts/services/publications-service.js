@@ -157,9 +157,9 @@ PublicationsService.prototype.loadPublicationList = function() {
 
         });
 
-
-
 };
+
+
 
 /**
  * Prends en paramétre un nom depot au format user/rep
@@ -173,9 +173,8 @@ module.exports = function(angularMod, source) {
         throw "You must specify a source !";
     }
 
+    // fabrication du service de mise à dispo des publications
     var id = constants.servicePublications;
-
-    // fabrication du service
     angularMod.factory(id, function($http, $q) {
         return new PublicationsService(source, $http, $q);
     });

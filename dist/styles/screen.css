@@ -9,6 +9,14 @@
   margin: auto;
 }
 
+a {
+  color: rgb(145, 255, 216);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 /****
 
 Merci à http://codepen.io/rafaelrinaldi/pen/uGifm
