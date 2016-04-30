@@ -5,7 +5,8 @@
 module.exports = function(angularMod) {
 
     var routes = {
-        welcomeRoute: require("../views/welcome/welcome-view.js"),
+        welcomeView: require("./welcome/welcome-view.js"),
+        articleView: require("./showArticle/showArticle-view.js"),
     };
 
     // creer un nom de controlleur dynamique
@@ -26,8 +27,6 @@ module.exports = function(angularMod) {
         // declarer le controlleur, au nom de l'url simple
         if (typeof elmt.controller !== "undefined") {
 
-            console.log(elmt.controller);
-
             angularMod.controller(controllerNameOf(elmt),
                 elmt.controller);
         }
@@ -37,11 +36,6 @@ module.exports = function(angularMod) {
 
         // enlever les # des URLS
         // $locationProvider.html5Mode(true);
-
-        // fabrique de template a partir d'un element, avec titre et contenu
-        var makeViewTemplate = function(elmt) {
-            return "<h1>" + elmt.label + "</h1>" + elmt.template;
-        };
 
         // iterer les vues diponibles pour établir les routes possibles
         for (var elmtK in routes) {
@@ -59,7 +53,7 @@ module.exports = function(angularMod) {
 
                 // parametres de la route
                 var params = {};
-                params.template = makeViewTemplate(elmt);
+                params.template = elmt.template;
 
                 if (typeof elmt.controller !== "undefined") {
                     params.controllerAs = "$ctrl";

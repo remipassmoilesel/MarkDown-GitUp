@@ -1,20 +1,15 @@
-
-.headerComponent{
-  width: 80%;
-  margin: auto;
+#content {
+    width: 80%;
+    margin: auto;
 }
 
-.contentComponent{
-  width: 80%;
-  margin: auto;
-}
 
 a {
-  color: rgb(145, 255, 216);
+    color: rgb(145, 255, 216);
 }
 
 a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 /****
@@ -24,63 +19,63 @@ Merci à http://codepen.io/rafaelrinaldi/pen/uGifm
 ****/
 
 body {
-  cursor: text;
-  counter-reset: input;
-  margin: 20px;
-  padding: 0;
-  background: lavenderblush;
-  -moz-font-smoothing: antialiased;
-  -webkit-font-smoothing: antialiased;
-  font-smoothing: antialiased;
-  background: #002728;
+    cursor: text;
+    counter-reset: input;
+    margin: 20px;
+    padding: 0;
+    background: lavenderblush;
+    -moz-font-smoothing: antialiased;
+    -webkit-font-smoothing: antialiased;
+    font-smoothing: antialiased;
+    background: #002728;
 }
-
 .terminal {
-  float: left;
-  margin: 0;
-  padding: 0;
-  font-family: Menlo, Courier New;
-  font-size: 14px;
-  text-rendering: optimizeLegibility;
-  font-weight: bold;
-  color: white;
+    float: left;
+    margin: 0;
+    padding: 0;
+    font-family: Menlo, Courier New;
+    font-size: 14px;
+    text-rendering: optimizeLegibility;
+    font-weight: bold;
+    color: white;
 }
 .terminal > .terminal--input {
-  counter-increment: input;
+    counter-increment: input;
 }
 .terminal > .terminal--input:before {
-  content: "[" counter(input) "] $ ";
+    content: "[" counter(input) "] $ ";
 }
 .terminal > .terminal--input:last-child:after {
-  -webkit-animation: blink 0.75s infinite;
-  animation: blink 0.75s infinite;
-  margin-left: 5px;
-  width: 28px;
-  content: "|";
-  background: white;
+    -webkit-animation: blink 0.75s infinite;
+    animation: blink 0.75s infinite;
+    margin-left: 5px;
+    width: 28px;
+    content: "|";
+    background: white;
 }
 .terminal > .terminal--output.is-console:before {
-  margin-right: 10px;
-  content: ">";
+    margin-right: 10px;
+    content: ">";
 }
+
 .terminal > .terminal--output.is-not-defined:before {
-  content: "undefined";
-  color: rgba(255, 255, 255, 0.5);
+    content: "undefined";
+    color: rgba(255, 255, 255, 0.5);
 }
 
 @-webkit-keyframes blink {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }
 @keyframes blink {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }

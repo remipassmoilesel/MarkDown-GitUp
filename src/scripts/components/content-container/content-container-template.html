@@ -1,0 +1,29 @@
+<div class="contentComponent" layout="row">
+
+    <table>
+        <tr>
+
+            <!-- Le menu -->
+            <td style="vertical-align: top; padding: 8px;">
+
+                <div ng-repeat="lnk in $ctrl.links">
+                    <a href="{{lnk.url_display}}">{{lnk.name}}</a>
+                </div>
+
+            </td>
+
+            <!-- La ou est afficher le contenu -->
+            <td ng-view style="padding: 8px;"></td>
+        </tr>
+
+    </table>
+
+    <!-- lister les repositories disponibles -->
+    <!-- <availables-repos username="remipassmoilesel"></availables-repos> -->
+
+    <!-- lister les publications disponibles -->
+    <!-- <availables-publications repository="remipassmoilesel/markdown-github"></availables-publications> -->
+
+
+
+</div>

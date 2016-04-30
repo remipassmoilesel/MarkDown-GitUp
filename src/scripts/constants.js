@@ -10,16 +10,26 @@ module.exports = {
      * @type {String}
      */
     serviceRoutes: "serviceRoutes",
-   /**
-    * Le répertoire ou sont recherchées les publications
-    * @type {String}
-    */
+    /**
+     * Le répertoire ou sont recherchées les publications
+     * @type {String}
+     */
     publicationDirectory: "publications",
     /**
      * Le nom du fichier de description par défaut
      * @type {String}
      */
     descriptionFileName: "description.md",
+    /**
+     * Le même sans extension
+     * @type {String}
+     */
+    descriptionName: "description",
+    /**
+     * Catégorie principale
+     * @type {String}
+     */
+    mainCategoryName: "main",
     /**
      * Adresse de base de l'API
      * @type {String}

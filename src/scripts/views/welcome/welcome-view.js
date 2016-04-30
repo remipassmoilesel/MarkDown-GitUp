@@ -3,7 +3,6 @@
  */
 
 module.exports = {
-    label: "Accueil",
     urlPatterns: [
         "/welcome"
     ],

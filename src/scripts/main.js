@@ -4,12 +4,22 @@ var SOURCE = "remipassmoilesel/MarkDown-GitUp";
 // chargement d'angular
 var angular = require("angular");
 require("angular-sanitize");
-
+require("angular-material/angular-material.css");
+require("angular-messages");
 require("angular-route");
+require("angular-animate");
+require("ng-draggable");
 
+/**
+ * Application principale
+ * @param  {[type]} "markdownGithub" [description]
+ * @param  {[type]} ["ngSanitize"    [description]
+ * @param  {[type]} "ngRoute"]       [description]
+ * @return {[type]}                  [description]
+ */
 var angMod = angular.module("markdownGithub", ["ngSanitize", "ngRoute"]);
 
-require("./services/routes.js")(angMod);
+require("./views/routes.js")(angMod);
 
 // service de manipulations des publications
 require("./services/publications-service.js")(angMod, SOURCE);
@@ -24,7 +34,7 @@ require("./components/availables-publications/availables-publications-component.
 require("./components/header/header-component.js")(angMod);
 
 // contenu de page
-require("./components/content/content-component.js")(angMod);
+require("./components/content-container/content-container-component.js")(angMod);
 
 angMod.run(function($http) {
 
