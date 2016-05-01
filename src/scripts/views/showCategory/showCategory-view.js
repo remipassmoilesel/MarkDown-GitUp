@@ -25,11 +25,22 @@ module.exports = {
             // récuperer le contenu de la publication
             publications.getPublicationList()
                 .then(function(response) {
-                    var content = response.categories[vm.categoryName].descriptionContent;
 
-                    vm.categoryContent = utils.markDownToHTML(content);
+                    console.log(vm.categoryName);
+                    console.log(response);
 
-                    vm.articles = response.categories[vm.categoryName].articles;
+                    if(typeof response.categories[vm.categoryName] !== "undefined"){
+                        var content = response.categories[vm.categoryName].descriptionContent;
+                        vm.categoryContent = utils.markDownToHTML(content);
+                        vm.articles = response.categories[vm.categoryName].articles;
+                    }
+
+                    else {
+                        vm.categoryContent = "";
+                        vm.articles = [];
+                    }
+
+
                 });
 
             // emplacement de la publication

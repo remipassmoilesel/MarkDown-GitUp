@@ -44,6 +44,7 @@ PublicationsService.prototype.getContentByObject = function(pub) {
             .then(function(response) {
 
                 console.log("PublicationsService.prototype.getContentByObject = function(pub) {")
+                console.log(pub.url_raw_download);
 
                 vm.publicationContents[pub.url_raw_download] = response.data;
                 return response.data;
@@ -246,7 +247,7 @@ PublicationsService.prototype.loadPublicationList = function() {
                          * Url relatif d'affichage de la catégorie
                          * @type {RegExp}
                          */
-                        output.categories[catName].url_display = "#/category/" + catName;
+                        output.categories[catName].url_display = "#/category/" + encodeURIComponent(catName);
                         /**
                          * Contenu de la description
                          * @type {String}
@@ -295,17 +296,12 @@ PublicationsService.prototype.loadPublicationList = function() {
                          * URL absolu permettant d'accéder au contenu brut
                          * @type {RegExp}
                          */
-                        na.url_raw_download = constants.githubRawContent + vm.source + "/master/" + file.path;
+                        na.url_raw_download = constants.githubRawContent + vm.source + "/master/" + encodeURIComponent(file.path);
                         /**
                          * Url relatif d'affichage de l'article
                          * @type {String}
                          */
-                        na.url_display = "#/article/" + (regTest[1] || constants.mainCategoryName) + "/" + regTest[2];
-                        /**
-                         * Chemin relatif à la racine du depot
-                         * @type {[type]}
-                         */
-                        na.path = file.path;
+                        na.url_display = "#/article/" + encodeURIComponent((regTest[1] || constants.mainCategoryName) + "/" + regTest[2]);
 
                         output.allArticles.push(na);
 
