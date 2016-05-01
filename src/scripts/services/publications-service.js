@@ -308,7 +308,11 @@ PublicationsService.prototype.loadPublicationList = function() {
                         na.path = file.path;
 
                         output.allArticles.push(na);
-                        output.categories[catName].articles.push(na);
+
+                        // ne pas enregistrer l'index dans la categorie main
+                        if (na.name !== constants.indexFileName) {
+                            output.categories[catName].articles.push(na);
+                        }
                     }
 
                 }

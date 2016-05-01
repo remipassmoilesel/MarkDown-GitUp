@@ -28,8 +28,14 @@ module.exports = {
     /**
      * Catégorie principale
      * @type {String}
+     *
      */
     mainCategoryName: "main",
+    /**
+     * Nom du document index
+     * @type {String}
+     */
+    indexFileName: "index",
     /**
      * Adresse de base de l'API
      * @type {String}

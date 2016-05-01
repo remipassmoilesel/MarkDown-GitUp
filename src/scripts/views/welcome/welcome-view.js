@@ -3,6 +3,7 @@
  */
 
 var constants = require("../../constants.js");
+var utils = require("../../utils.js");
 
 module.exports = {
     urlPatterns: [
@@ -19,11 +20,10 @@ module.exports = {
 
             // récupérer la publication index
             publications.searchContentByObject({
-                    name: "index"
+                    name: constants.indexFileName
                 })
                 .then(function(response) {
-                    vm.indexContent = response;
-                    console.log(response);
+                    vm.indexContent = utils.markDownToHTML(response);
                 });
 
         }

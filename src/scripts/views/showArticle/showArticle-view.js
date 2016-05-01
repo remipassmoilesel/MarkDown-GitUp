@@ -3,6 +3,7 @@
  */
 
 var constants = require("../../constants.js");
+var utils = require("../../utils.js");
 
 module.exports = {
     urlPatterns: [
@@ -21,16 +22,13 @@ module.exports = {
 
             var vm = this;
 
-            // conversion markdown / html
-            this.markdown = require("markdown").markdown;
-
             // récuperer le contenu de la publication
             publications.searchContentByObject({
                     category: this.articleCategory,
                     name: this.articleName
                 })
                 .then(function(response) {
-                    vm.publicationContent = vm.markdown.toHTML(response);
+                    vm.publicationContent = utils.markDownToHTML(response);
                 });
 
             // emplacement de la publication
