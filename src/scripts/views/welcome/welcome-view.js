@@ -2,6 +2,8 @@
  * Recherche de patients et d'infirmier
  */
 
+var constants = require("../../constants.js");
+
 module.exports = {
     urlPatterns: [
         "/welcome"
@@ -9,14 +11,20 @@ module.exports = {
     template: require("./welcome-template.html"),
 
     controller: [
-        "$routeParams",
+        "$routeParams", constants.servicePublications,
 
-        function($routeParams) {
+        function($routeParams, publications) {
 
-            // récuperer les arguments de l'url pour les transmettre à la recherche
-            // this.personName = $routeParams['name'] || '';
-            // this.personFirstname = $routeParams['firstname'] || '';
-            // this.personId = $routeParams['id'] || '';
+            var vm = this;
+
+            // récupérer la publication index
+            publications.searchContentByObject({
+                    name: "index"
+                })
+                .then(function(response) {
+                    vm.indexContent = response;
+                    console.log(response);
+                });
 
         }
     ]
