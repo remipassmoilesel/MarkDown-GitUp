@@ -9,6 +9,7 @@ A publier simplement en Markdown, directement en ligne de commande.
 1. Créez un dossier 'publications'
 1. Ecrivez vos articles avec MarkDown !
 1. Et publiez:
+
 ```
 $ git add -A && git commit -m 'Publication !' && git push origin
 ```
