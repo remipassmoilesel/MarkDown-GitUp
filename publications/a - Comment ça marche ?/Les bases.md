@@ -11,7 +11,7 @@ A publier simplement en Markdown, directement en ligne de commande.
 1. Et publiez:
 
 ```
-$ git add -A && git commit -m 'Publication !' && git push origin
+  $ git add -A && git commit -m 'Publication !' && git push origin
 ```
 
 Tout ce qui est publié dans ce dossier sera mis en forme et publié !
