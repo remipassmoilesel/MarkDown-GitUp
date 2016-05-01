@@ -28,26 +28,6 @@ gulp.task('images', function() {
 });
 
 /*
-Gestion des styles
-*/
-gulp.task('styles', function() {
-    gulp.src(['src/styles/**/*.css'])
-        .pipe(plumber({
-            errorHandler: function(error) {
-                console.log(error.message);
-                this.emit('end');
-            }
-        }))
-        .pipe(autoprefixer('last 2 versions'))
-        .pipe(gulp.dest('dist/styles/'))
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(minifycss())
-        .pipe(gulp.dest('dist/styles/'));
-});
-
-/*
 Gestion des scripts
 */
 gulp.task('scripts', function() {
@@ -75,19 +55,18 @@ gulp.task('scripts', function() {
             plugins: [new ExtractTextPlugin("[name].css")],
             watch: true
         }))
-        .pipe(gulp.dest('dist/scripts/'))
+        .pipe(gulp.dest('dist/'))
         .pipe(rename({
             suffix: '.min'
         }))
         .pipe(uglify())
-        .pipe(gulp.dest('dist/scripts/'));
+        .pipe(gulp.dest('dist/'));
 });
 
 /*
 Tache par défaut
 */
-gulp.task('default', ['scripts', 'styles', 'images'], function() {
-    gulp.watch("src/styles/**/*.css", ['styles']);
-    gulp.watch("src/scripts/**/*.js", ['scripts']);
+gulp.task('default', ['scripts', 'images'], function() {
+    gulp.watch("src/scripts/**/*", ['scripts']);
     gulp.watch("src/images/**", ['images']);
 });

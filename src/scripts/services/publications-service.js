@@ -18,10 +18,10 @@ var PublicationsService = function(source, $http, $q) {
     this.$q = $q;
 
     // cache de la liste des publications
-    this.publicationList = [];
+    this.publicationContainer = [];
 
     // cache des publications
-    this.publications = {};
+    this.publicationContents = {};
 
     // première mise à jour de la liste
     this.getPublicationList();
@@ -39,18 +39,18 @@ PublicationsService.prototype.getContentByObject = function(pub) {
 
     // la ressource n'a jamais été demandée, faire un appel et
     // conserver le résultat en cache
-    if (typeof this.publications[pub.url_raw_download] === "undefined") {
+    if (typeof this.publicationContents[pub.url_raw_download] === "undefined") {
         return this.$http.get(pub.url_raw_download)
             .then(function(response) {
 
                 console.log("PublicationsService.prototype.getContentByObject = function(pub) {")
 
-                vm.publications[pub.url_raw_download] = response.data;
+                vm.publicationContents[pub.url_raw_download] = response.data;
                 return response.data;
             });
     } else {
         return this.$q(function(resolve, reject) {
-            resolve(vm.publications[pub.url_raw_download]);
+            resolve(vm.publicationContents[pub.url_raw_download]);
         });
     }
 };
@@ -67,6 +67,11 @@ PublicationsService.prototype.searchContentByObject = function(wanted) {
     // rechercher l'url de telechargement
     return this.searchPublication(wanted)
         .then(function(response) {
+
+            if (response.length < 1) {
+                console.error("No results: ", wanted, response);
+            }
+
             return vm.getContentByObject(response[0]);
         });
 };
@@ -82,10 +87,10 @@ PublicationsService.prototype.getPublicationList = function() {
     var vm = this;
 
     // la liste des publications n'a jamais été encore demandé
-    if (this.publicationList.length < 1) {
+    if (this.publicationContainer.length < 1) {
         return this.loadPublicationList()
             .then(function(list) {
-                vm.publicationList = list;
+                vm.publicationContainer = list;
                 return list;
             });
     }
@@ -93,7 +98,7 @@ PublicationsService.prototype.getPublicationList = function() {
     // la liste est en cache
     else {
         return this.$q(function(resolve, reject) {
-            resolve(vm.publicationList);
+            resolve(vm.publicationContainer);
         });
     }
 
@@ -109,7 +114,9 @@ PublicationsService.prototype.searchPublication = function(wanted) {
     //category, name, keywords
 
     return this.getPublicationList()
-        .then(function(list) {
+        .then(function(publicationContainer) {
+
+            var list = publicationContainer.allArticles;
 
             var output = [];
             list.forEach(function(elmt) {
@@ -166,25 +173,48 @@ PublicationsService.prototype.loadPublicationList = function() {
         .then(function(response) {
 
             if (response.truncated == true) {
-                console.err("Attention: not all files were received !");
+                console.error("Attention: not all files were received !");
             }
 
             // récupérer le contenu d'une entrée de fichier et l'ajouter à la variable
-            var getFileContent = function(fe) {
-                vm.$http.get(fe.url_raw_download)
+            var getDescriptionContent = function(fe) {
+                vm.$http.get(fe.url_raw_description)
                     .then(function(response) {
-                        fe.content = response.data;
+                        fe.descriptionContent = response.data;
                     })
                     .catch(function(resp) {
-                        fe.content = "Contenu indisponible";
+                        fe.descriptionContent = "Contenu indisponible";
                     });
             }
 
-            var output = [];
+            /**
+             * Constructeurs nommés pour marquage
+             * @return {[type]} [description]
+             */
+            var PublicationContainer = function() {};
+            var Category = function() {};
+            var Article = function() {};
+
+            // sortie avec categorie principale
+            var output = new PublicationContainer();
+
+            /**
+             * Champs de stockage de tous les articles pour recherche
+             * @type {Array}
+             */
+            output.allArticles = [];
+
+            /**
+             * Champs de stockage des articles par catégories
+             * @type {Object}
+             */
+            output.categories = {};
 
             // l'ensemble des promesses à tenir avant de retourner les valeurs
             var promises = [];
 
+            // pattern de recuperation du nom de la categorie dans une chaine au format
+            // publications/categorie/article.md
             var fileRegex = new RegExp(constants.publicationDirectory + "/(?:([^/]+)/)?([^/]+)\.md", "i");
 
             // itérer les reponses
@@ -196,149 +226,96 @@ PublicationsService.prototype.loadPublicationList = function() {
                     continue;
                 }
 
-                // vérifier le fichier
+                // vérifier le chemin du fichier
                 var regTest = fileRegex.exec(file.path);
 
-
-                // le fichier se termine par md
+                // le chemin est au bon format
                 if (regTest !== null) {
 
-                    // enregistrer le fichier
-                    var nf = {
+                    var catName = regTest[1] || "main";
+
+                    if (typeof output.categories[catName] === "undefined") {
+
+                        output.categories[catName] = new Category();
                         /**
-                         * Catégorie
-                         * @type {[type]}
+                         * Les articles
+                         * @type {Object}
                          */
-                        category: regTest[1] || constants.mainCategoryName,
-                        /**
-                         * Nom de l'article (du fichier sans extension)
-                         * @type {[type]}
-                         */
-                        name: regTest[2],
-                        /**
-                         * Type: article ou categorie
-                         * @type {[type]}
-                         */
-                        type: regTest[2] === constants.descriptionName ? 'category' : 'article',
-                        /**
-                         * URL absolu permettant d'accéder au contenu brut
-                         * @type {RegExp}
-                         */
-                        url_raw_download: constants.githubRawContent + vm.source + "/master/" + file.path,
+                        output.categories[catName].articles = [];
                         /**
                          * Url relatif d'affichage de la catégorie
                          * @type {RegExp}
                          */
-                        url_category: "#/category/" + regTest[1],
+                        output.categories[catName].url_display = "#/category/" + catName;
+                        /**
+                         * Contenu de la description
+                         * @type {String}
+                         */
+                        output.categories[catName].descriptionContent = "";
+                    }
 
+                    // fichier de description
+                    if (regTest[2] === constants.descriptionName) {
+
+                        /**
+                         * TUrl de téléchargement de la description
+                         * @type {[type]}
+                         */
+                        output.categories[catName].url_raw_description = constants.githubRawContent + vm.source + "/master/" + file.path;
+                        /**
+                         * Contenu de la description, demandé ci dessous
+                         * @type {RegExp}
+                         */
+                        output.categories[catName].descriptionContent = "";
+
+                        // attacher le contenu à l'objet
+                        var p = getDescriptionContent(output.categories[catName]);
+
+                        // stocker la promesse pour attendre
+                        promises.push(p);
+                    }
+
+                    // enregistrer un article
+                    else {
+
+                        // enregistrer le fichier
+                        var na = new Article();
+                        /**
+                         * Catégorie
+                         * @type {[type]}
+                         */
+                        na.category = catName;
+
+                        /**
+                         * Nom de l'article (du fichier sans extension)
+                         * @type {[type]}
+                         */
+                        na.name = regTest[2];
+                        /**
+                         * URL absolu permettant d'accéder au contenu brut
+                         * @type {RegExp}
+                         */
+                        na.url_raw_download = constants.githubRawContent + vm.source + "/master/" + file.path;
                         /**
                          * Url relatif d'affichage de l'article
                          * @type {String}
                          */
-                        url_article: "#/article/" + (regTest[1] || constants.mainCategoryName) + "/" + regTest[2],
+                        na.url_display = "#/article/" + (regTest[1] || constants.mainCategoryName) + "/" + regTest[2];
                         /**
                          * Chemin relatif à la racine du depot
                          * @type {[type]}
                          */
-                        path: file.path
-                    };
-                    output.push(nf);
+                        na.path = file.path;
 
-                    // récuperer le contenu des descriptions
-                    if (nf.name === constants.descriptionName) {
-                        // recuperer le contenu
-                        var p = getFileContent(nf);
-
-                        // stocker la promesse pour attente
-                        promises.push(p);
+                        output.allArticles.push(na);
+                        output.categories[catName].articles.push(na);
                     }
-
 
                 }
             }
 
             // retourner le tout lorsque toutes les promesses sont tenues
             return vm.$q.all(promises).then(function() {
-
-                // verifier que toutes les categories ai une entrée, même celles
-                // ne possédant pas de descripteur
-                var categories = [];
-
-                // lister les categories
-                output.forEach(function(elmt){
-                    if(categories.indexOf(elmt.category) === -1){
-                        categories.push(elmt.category);
-                    }
-                });
-
-                console.log("PublicationsService.prototype.loadPublicationList = function() {");
-                console.log(categories);
-
-                // effacer les categories possédant déjà un descripteur
-                output.forEach(function(elmt){
-                    if(elmt.type === "category"){
-                        categories[categories.indexOf(elmt.category)] = "";
-                    }
-                });
-
-                console.log("222 - PublicationsService.prototype.loadPublicationList = function() {");
-                console.log(categories);
-
-                // créer les descripteurs
-                for (var i = 0; i < categories.length; i++) {
-                    var elmt = categories[i];
-
-                    if(elmt === ""){
-                        continue;
-                    }
-
-                    // enregistrer le fichier
-                    var nf = {
-                        /**
-                         * Catégorie
-                         * @type {[type]}
-                         */
-                        category: elmt,
-                        /**
-                         * Nom de l'article (du fichier sans extension)
-                         * @type {[type]}
-                         */
-                        name: constants.descriptionName,
-                        /**
-                         * Type: article ou categorie
-                         * @type {[type]}
-                         */
-                        type: 'category',
-                        /**
-                         * URL absolu permettant d'accéder au contenu brut
-                         * @type {RegExp}
-                         */
-                        url_raw_download: constants.githubRawContent + vm.source + "/master/" + elmt,
-                        /**
-                         * Url relatif d'affichage de la catégorie
-                         * @type {RegExp}
-                         */
-                        url_category: "#/category/" + elmt,
-
-                        /**
-                         * Url relatif d'affichage de l'article
-                         * @type {String}
-                         */
-                        url_article: "",
-                        /**
-                         * Chemin relatif à la racine du depot
-                         * @type {[type]}
-                         */
-                        path: constants.publicationDirectory + "/" + elmt
-                    };
-
-                    output.push(nf);
-
-                }
-
-                console.log(output);
-
-
                 return output;
             });
 

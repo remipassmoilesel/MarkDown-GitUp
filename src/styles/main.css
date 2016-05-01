@@ -1,0 +1,18 @@
+*{
+    font-family: monospace;
+    font-size: 13px;
+    color: #2e2e2e;
+}
+
+.headerComponent{
+    text-align: center;
+}
+
+a {
+    color: rgb(0, 21, 108);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}

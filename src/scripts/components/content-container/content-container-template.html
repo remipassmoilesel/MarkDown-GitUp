@@ -1,22 +1,12 @@
 <div class="contentComponent" layout="row">
 
-    <table>
-        <tr>
+    <div flex="20">
+        <div ng-repeat="lnk in $ctrl.links" ng-class="lnk.class">
+            <a href="{{lnk.href}}">{{lnk.label}}</a>
+        </div>
+    </div>
 
-            <!-- Le menu -->
-            <td style="vertical-align: top; padding: 8px;">
-
-                <div ng-repeat="lnk in $ctrl.links">
-                    <a href="{{lnk.url_display}}">{{lnk.name}}</a>
-                </div>
-
-            </td>
-
-            <!-- La ou est afficher le contenu -->
-            <td ng-view style="padding: 8px;"></td>
-        </tr>
-
-    </table>
+    <md-content flex ng-view class="contentComponentView"></md-content>
 
     <!-- lister les repositories disponibles -->
     <!-- <availables-repos username="remipassmoilesel"></availables-repos> -->

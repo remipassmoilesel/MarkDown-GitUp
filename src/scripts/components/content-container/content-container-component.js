@@ -4,6 +4,7 @@
  */
 
 var template = require("./content-container-template.html");
+require("./content-container-template.css");
 
 var constants = require("../../constants.js");
 
@@ -28,50 +29,30 @@ ContentContainerController.prototype.updateArticles = function() {
 
     // recupere la liste de publications
     this.publications.getPublicationList()
-        .then(function(list) {
+        .then(function(publicationContainer) {
 
             vm.links = [];
 
-            vm.articles = [];
-            vm.categories = [];
+            for(cat in publicationContainer.categories){
 
-            // séparer les categories des publications
-            list.forEach(function(elmt) {
-                if (elmt.type === 'category') {
-                    vm.categories.push(elmt);
-                } else {
-                    vm.articles.push(elmt);
-                }
-            });
-
-            console.log(vm.categories);
-            console.log(vm.articles);
-
-            // trier les categories et les publications
-            vm.categories.forEach(function(elmt) {
-
-                // insertion de la catégorie
                 vm.links.push({
-                    url_display: elmt.url_category,
-                    name: elmt.category,
+                    label: cat,
+                    href: publicationContainer.categories[cat].url_display,
+                    class: "contentComponentMenuCategory"
                 });
 
-                // recherche de tous les liens associés
-                for (var i = 0; i < vm.articles.length; i++) {
-                    var art = vm.articles[i];
+                // itérer les articles
+                for (var i = 0; i < publicationContainer.categories[cat].articles.length; i++) {
+                    var art = publicationContainer.categories[cat].articles[i];
 
-                    console.log("for (var i = 0; i < vm.articles.length; i++) {");
-                    console.log(elmt.category);
-                    console.log(art.category);
+                    vm.links.push({
+                        label: art.name,
+                        href: art.url_display,
+                        class: "contentComponentMenuElement"
+                    });
 
-                    if (art.category === elmt.category) {
-                        vm.links.push({
-                            url_display: elmt.url_article,
-                            name: elmt.name,
-                        });
-                    }
                 }
-            });
+            }
 
         })
 

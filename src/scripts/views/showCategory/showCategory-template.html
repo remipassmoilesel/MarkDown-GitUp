@@ -1,0 +1,17 @@
+
+<!-- Nom de la catégorie courante-->
+<h5>Emplacement: {{$ctrl.location}}</h5>
+
+
+<!-- Contenu de la description -->
+<div ng-bind-html="$ctrl.categoryContent">
+</div>
+
+<h5>Articles:</h5>
+<div>
+  <ul>
+    <li ng-repeat="art in $ctrl.articles">
+      <a href="{{art.url_display}}">{{art.name}}</a>
+    </li>
+  </ul>
+</div>

@@ -7,6 +7,7 @@ module.exports = function(angularMod) {
     var routes = {
         welcomeView: require("./welcome/welcome-view.js"),
         articleView: require("./showArticle/showArticle-view.js"),
+        categoryView: require("./showCategory/showCategory-view.js"),
     };
 
     // creer un nom de controlleur dynamique

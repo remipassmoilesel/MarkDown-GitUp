@@ -1,26 +1,27 @@
 <!DOCTYPE html>
-<html ng-app="markdownGithub" >
+<html ng-app="markdownGithub">
 
 <head>
 
-    <script src="dist/scripts/main.js"></script>
-
+    <title>MarkdownJS</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>MarkdownJS</title>
     <meta name="description" content="">
-    <link rel="stylesheet" href="dist/styles/screen.css">
+
+    <link rel="stylesheet" href="dist/main.css">
 
 </head>
 
-<body class="terminal" ng-cloak>
+<body ng-cloak layout="column">
 
-    <div id="content">
-        <header></header>
+    <header flex="15" flex-offset="5"></header>
 
-        <content></content>
+    <div flex layout="row">
+        <content flex="60" flex-offset="20"></content>
     </div>
+
+    <script src="dist/main.js"></script>
 
 </body>
 
