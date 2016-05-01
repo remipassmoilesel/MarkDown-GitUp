@@ -38,7 +38,7 @@ ContentContainerController.prototype.updateArticles = function() {
                 vm.links.push({
                     label: cat,
                     href: publicationContainer.categories[cat].url_display,
-                    class: "contentComponentMenuCategory"
+                    class: "contentComponentMenuCategory",
                 });
 
                 // itérer les articles
@@ -48,7 +48,7 @@ ContentContainerController.prototype.updateArticles = function() {
                     vm.links.push({
                         label: art.name,
                         href: art.url_display,
-                        class: "contentComponentMenuElement"
+                        class: "contentComponentMenuElement",
                     });
 
                 }
